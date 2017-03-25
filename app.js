@@ -1,3 +1,6 @@
+// PURE JAVASCRIPT APP - NO LIBRARIES USED 
+
+
 var todoList = {
   todos: [],
   addTodo: function(todoText) {
