@@ -55,10 +55,24 @@ var handlers = {
     changeTodoPositionInput.value = '';
     changeTodoTextInput.value = '';
     view.displayTodos();
-
+  },
+  deleteTodo: function() {
+    var deleteTodoPositionInput = document.getElementById('deleteTodoPositionInput');
+    todoList.deleteTodo(deleteTodoPositionInput.valueAsNumber);
+    deleteTodoPositionInput.value = '';
+    view.displayTodos();
+  },
+  toggleCompleted: function() {
+    var toggleCompletedPositionInput = document.getElementById('toggleCompletedPositionInput');
+    todoList.toggleCompleted(toggleCompletedPositionInput.valueAsNumber);
+    toggleCompletedPositionInput.value = '';
+    view.displayTodos();
+  },
+  toggleAll: function() {
+    todoList.toggleAll();
+    view.displayTodos();
+  }
 };
-
-
 
 var view = {
   displayTodos: function() {
@@ -80,5 +94,10 @@ var view = {
       todosUl.appendChild(todoLi);
     }
   },
-
+  createDeleteButton: function() {
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'deleteButton';
+    return deleteButton;
+  }
 };
