@@ -1,7 +1,3 @@
-
-// PURE JAVASCRIPT APP FOR BETTER JAVASCRIPT
-// UNDERSTANDING - NO LIBRARIES USED 
-
 var todoList = {
   todos: [],
   addTodo: function(todoText) {
@@ -25,23 +21,27 @@ var todoList = {
     var completedTodos = 0;
 
     // Get number of completed todos.
-    for (var i = 0; i < totalTodos; i++) {
-      if (this.todos[i].completed === true) {
+    // for (var i = 0; i < totalTodos; i++) {
+     // if (this.todos[i].completed === true) {
+       // completedTodos++;
+     // }
+   // }  replaced with the bottom:
+
+    this.todos.forEach(function(todo) {
+      if (todo.completed === true) {
         completedTodos++;
       }
-    }
+    });
 
-    // Case 1: If everything’s true, make everything false.
-    if (completedTodos === totalTodos) {
-      for (var i = 0; i < totalTodos; i++) {
-        this.todos[i].completed = false;
-      }
-    // Case 2: Otherwise, make everything true.
-    } else {
-      for (var i = 0; i < totalTodos; i++) {
-        this.todos[i].completed = true;
-      }
-    }
+    this.todos.forEach(function(todo) {
+        // Case 1: If everything’s true, make everything false.
+        if (completedTodos === totalTodos) {
+          todo.completed = false;
+        // Case 2: Otherwise, make everything true.
+        } else {
+          todo.completed = true;
+        }
+    });
   }
 };
 
@@ -60,10 +60,9 @@ var handlers = {
     changeTodoTextInput.value = '';
     view.displayTodos();
   },
-  deleteTodo: function() {
-    var deleteTodoPositionInput = document.getElementById('deleteTodoPositionInput');
-    todoList.deleteTodo(deleteTodoPositionInput.valueAsNumber);
-    deleteTodoPositionInput.value = '';
+  deleteTodo: function(position) {
+    todoList.deleteTodo(position);
+    position.value = '';
     view.displayTodos();
   },
   toggleCompleted: function() {
@@ -82,26 +81,42 @@ var view = {
   displayTodos: function() {
     var todosUl = document.querySelector('ul');
     todosUl.innerHTML = '';
-    for (var i = 0; i < todoList.todos.length; i++) {
+
+    // this refers to the view object but when you say this inside a forEach you have to specify this as the second parameter of the callback function
+    // forEach(callback, this) therefore add this on line 101:
+    todoList.todos.forEach(function(todo, position) {
       var todoLi = document.createElement('li');
-      var todo = todoList.todos[i];
       var todoTextWithCompletion = '';
 
       if (todo.completed === true) {
-        todoTextWithCompletion = '(x) ' + todo.todoText;
-      } else {
-        todoTextWithCompletion = '( ) ' + todo.todoText;
-      }
+         todoTextWithCompletion = '(x) ' + todo.todoText;
+       } else {
+         todoTextWithCompletion = '( ) ' + todo.todoText;
+       }
 
+      todoLi.id = position;
       todoLi.textContent = todoTextWithCompletion;
       todoLi.appendChild(this.createDeleteButton());
       todosUl.appendChild(todoLi);
-    }
+    }, this) // this here is to make the this in this.createDeleteButton refere to view object
   },
   createDeleteButton: function() {
     var deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'deleteButton';
     return deleteButton;
-  }
-};
+  },
+  setUpEventListeners: function() {
+    var todosUl = document.querySelector('ul');
+
+    todosUl.addEventListener('click', function(event) {
+      var elementClicked = event.target;
+
+      if (elementClicked.className === 'deleteButton') {
+        handlers.deleteTodo(parseInt(elementClicked.parentNode.id)); // parseInt changes string to numbers
+      }
+    });
+   }
+ };
+
+view.setUpEventListeners();
